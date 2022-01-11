@@ -2,8 +2,8 @@ const squares = Array.from(document.querySelectorAll('.square'))
 const heading = document.querySelector("h1")
 
 const buttonColors = ['green', 'red', 'blue', 'yellow']
-const gamePattern = [] //Computer Pattern 
-const userPattern = [] // User Input Pattern to check with game Pattern
+let gamePattern = [] //Computer Pattern 
+let userPattern = [] // User Input Pattern to check with game Pattern
 
 let currentLevel = 0;
 // const gameOn = false;
@@ -62,14 +62,41 @@ squares.forEach((button) =>{
         console.log(event.target.classList)
 
 
-        let userClickedButtonColor = event.target.classList[0]
-        userPattern.push(userClickedButtonColor);
+        button.classList.add("pressed")
+        setTimeout(() => {
+            button.classList.remove("pressed");
+        },150)
 
-        if (gamePattern.length === userPattern.length && gamePattern[currentLevel-1] === userPattern[currentLevel-1]){
-            nextSequence()
-        } else{
-            gameOver();
-        }
+        let userClickedButtonColor = event.target.classList[0]
+        soundMap[userClickedButtonColor].play();
+
+        console.log(gamePattern);
+        console.log(userPattern);
+
+        setTimeout(() => {
+            // if (gamePattern[currentLevel-1] === userPattern[currentLevel-1] && gamePattern.length === userPattern.length){
+            //     nextSequence()
+            //     userPattern = []
+            //     //clear user Array to zero so that way the user can re do the pattern
+            // } else{
+            //     gameOver();
+            // }
+
+            if(userClickedButtonColor === gamePattern[userPattern.length]){
+                userPattern.push(userClickedButtonColor);
+                if (userPattern.length === gamePattern.length){
+                    userPattern = [];
+                    nextSequence();
+                }
+            } else{
+                gameOver()
+            }
+        },750)
+        // if (gamePattern.length === userPattern.length && gamePattern[currentLevel-1] === userPattern[currentLevel-1]){
+        //     nextSequence()
+        // } else{
+        //     gameOver();
+        // }
 
         // checkButtonifCorrect(userPattern.length -1)
 
@@ -82,15 +109,20 @@ function gameOver(){
     currentLevel = 0
 
     heading.innerText = "Game Over";
-    document.querySelector("body").classList.add(".game-over");
+    document.body.classList.add("game-over");
     soundMap.gameOver.play();
 
     setTimeout(() => {
+        document.body.classList.remove("game-over")
         heading.innerText = "Press a Key to Restart"
-        document.querySelector("body").classList.remove(".game-over")
+        document.addEventListener("keypress", () =>{
+
+            nextSequence();
+            
+        }, {once : true});
     },1500)
 
-    window.location.reload();
+    // window.location.reload();
 
 }
 
